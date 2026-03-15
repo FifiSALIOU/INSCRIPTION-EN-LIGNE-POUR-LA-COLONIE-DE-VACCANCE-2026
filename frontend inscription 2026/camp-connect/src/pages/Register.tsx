@@ -5,23 +5,9 @@ import { Eye, EyeOff, UserPlus, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
 import logo from "@/assets/logo.png";
-
-const services = [
-  "Direction Générale",
-  "Ressources Humaines",
-  "Finances et Comptabilité",
-  "Prestations Sociales",
-  "Recouvrement",
-  "Informatique",
-  "Service Médical",
-  "Affaires Juridiques",
-  "Communication",
-  "Audit et Contrôle",
-];
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -138,16 +124,7 @@ const Register = () => {
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="service">Service / Direction</Label>
-                <Select onValueChange={(val) => handleChange("service", val)}>
-                  <SelectTrigger className="h-11 bg-card">
-                    <SelectValue placeholder="Choisir..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {services.map((s) => (
-                      <SelectItem key={s} value={s}>{s}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Input id="service" placeholder="Ex: Prestations Sociales" value={formData.service} onChange={(e) => handleChange("service", e.target.value)} required className="h-11 bg-card" />
               </div>
             </div>
 
