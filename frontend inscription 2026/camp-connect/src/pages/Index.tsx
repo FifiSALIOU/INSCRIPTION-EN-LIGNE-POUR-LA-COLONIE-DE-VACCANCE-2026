@@ -64,7 +64,7 @@ const Index = () => {
                   size="lg"
                   variant="outline"
                   onClick={() => navigate("/login")}
-                  className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 h-14 text-lg"
+                  className="bg-transparent border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 h-14 text-lg"
                 >
                   J'ai déjà un compte
                 </Button>

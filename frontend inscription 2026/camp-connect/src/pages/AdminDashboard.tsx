@@ -97,6 +97,7 @@ const AdminDashboard = () => {
                       <TableRow className="bg-primary text-primary-foreground hover:bg-primary">
                         <TableHead className="text-primary-foreground font-bold text-xs uppercase tracking-wider">Matricule Parent</TableHead>
                         <TableHead className="text-primary-foreground font-bold text-xs uppercase tracking-wider">Nom Parent</TableHead>
+                        <TableHead className="text-primary-foreground font-bold text-xs uppercase tracking-wider">Prénom Parent</TableHead>
                         <TableHead className="text-primary-foreground font-bold text-xs uppercase tracking-wider">Prénom Enfant</TableHead>
                         <TableHead className="text-primary-foreground font-bold text-xs uppercase tracking-wider">Nom Enfant</TableHead>
                         <TableHead className="text-primary-foreground font-bold text-xs uppercase tracking-wider">Date Naissance</TableHead>
@@ -111,6 +112,7 @@ const AdminDashboard = () => {
                         <TableRow key={item.id} className="hover:bg-muted/50">
                           <TableCell className="font-mono text-xs">{item.parentMatricule}</TableCell>
                           <TableCell className="text-sm">{item.parentNom}</TableCell>
+                          <TableCell className="text-sm">{item.parentPrenom}</TableCell>
                           <TableCell className="text-sm">{item.childPrenom}</TableCell>
                           <TableCell className="text-sm">{item.childNom}</TableCell>
                           <TableCell className="text-sm">{new Date(item.childBirthDate).toLocaleDateString("fr-FR")}</TableCell>
