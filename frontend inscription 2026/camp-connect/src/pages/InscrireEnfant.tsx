@@ -175,15 +175,15 @@ const InscrireEnfant = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 gap-4 text-sm">
-                <div className="space-y-1.5">
-                  <Label htmlFor="parent-matricule">Matricule</Label>
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <p className="text-xs text-muted-foreground">Matricule</p>
                   <Input
                     id="parent-matricule"
                     value={parentMatricule}
                     onChange={(e) => setParentMatricule(e.target.value)}
                     onBlur={() => loadParentByMatricule(parentMatricule)}
                     placeholder="Entrez votre matricule"
-                    className="h-11 bg-background"
+                    className="h-8 mt-1 bg-white border border-border shadow-none font-medium placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-secondary"
                   />
                 </div>
                 <div className="bg-muted/50 rounded-lg p-3">
@@ -213,13 +213,13 @@ const InscrireEnfant = () => {
                   </Badge>
                 )}
                 {hasMain && childRelation !== "autre" && (
-                  <Badge className="ml-2 bg-warning/10 text-warning border-warning/20">
-                    Suppléant (Attente N°1)
+                  <Badge className="ml-2 bg-warning/10 text-warning border-warning/20 text-sm">
+                    Liste d'attente N°1 (Suppléant)
                   </Badge>
                 )}
                 {childRelation === "autre" && (
-                  <Badge className="ml-2 bg-muted text-muted-foreground">
-                    Attente N°2
+                  <Badge className="ml-2 bg-muted text-muted-foreground text-sm">
+                    Liste d'attente N° 2
                   </Badge>
                 )}
               </CardTitle>
@@ -266,10 +266,14 @@ const InscrireEnfant = () => {
                   </SelectContent>
                 </Select>
                 {childRelation === "autre" && (
-                  <div className="flex items-center gap-2 mt-2 text-xs text-warning">
-                    <AlertTriangle className="w-3 h-3" />
-                    Lien "Autre" → l'enfant sera inscrit en liste d'attente N°2
+                  <div className="mt-2 text-sm text-warning font-medium">
+                    Note : L'enfant sera inscrit en liste d'attente N°2
                   </div>
+                )}
+                {hasMain && childRelation !== "autre" && (
+                  <p className="mt-2 text-sm text-warning font-medium">
+                    Note : Vous avez déjà un enfant titulaire. Cet enfant sera enregistré comme suppléant.
+                  </p>
                 )}
               </div>
             </CardContent>
