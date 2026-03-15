@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Save, Baby, User, CheckCircle2, PlusCircle, AlertTriangle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +12,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useInscriptions } from "@/context/InscriptionsContext";
 import { Badge } from "@/components/ui/badge";
 import { LIST_LABELS, RELATION_LABELS, ParentRelation } from "@/types/app";
+import { apiRequest } from "@/lib/api";
 
 const InscrireEnfant = () => {
   const { toast } = useToast();
@@ -19,7 +20,11 @@ const InscrireEnfant = () => {
   const { currentUser } = useAuth();
   const { hasMainChildForParent, createInscription, getParentInscriptions } = useInscriptions();
 
-  const hasMain = currentUser ? hasMainChildForParent(currentUser.matricule) : false;
+  const [parentMatricule, setParentMatricule] = useState("");
+  const [parentService, setParentService] = useState("");
+  const [parentPrenom, setParentPrenom] = useState("");
+  const [parentNom, setParentNom] = useState("");
+  const [parentUserId, setParentUserId] = useState("");
 
   const [childPrenom, setChildPrenom] = useState("");
   const [childNom, setChildNom] = useState("");
@@ -30,9 +35,48 @@ const InscrireEnfant = () => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [lastResult, setLastResult] = useState<{ ok: boolean; message: string; listType?: string } | null>(null);
 
+  const hasMain = currentUser ? hasMainChildForParent(parentMatricule.trim() || currentUser.matricule) : false;
+
+  useEffect(() => {
+    if (currentUser) {
+      setParentMatricule(currentUser.matricule);
+      setParentService(currentUser.service ?? "");
+      setParentPrenom(currentUser.prenom ?? "");
+      setParentNom(currentUser.nom ?? "");
+      setParentUserId(currentUser.id);
+    }
+  }, [currentUser?.id]);
+
+  const loadParentByMatricule = async (mat: string) => {
+    const trimmed = mat.trim();
+    if (!trimmed) {
+      setParentService("");
+      setParentPrenom("");
+      setParentNom("");
+      setParentUserId("");
+      return;
+    }
+    const { data, error } = await apiRequest<{ id: number; matricule: string; prenom?: string | null; nom?: string | null; service?: string | null }>(
+      `/users/by-matricule/${encodeURIComponent(trimmed)}`,
+      { method: "GET" },
+    );
+    if (error || !data) {
+      setParentService("");
+      setParentPrenom("");
+      setParentNom("");
+      setParentUserId("");
+      if (error) toast({ title: "Matricule non trouvé", description: error, variant: "destructive" });
+      return;
+    }
+    setParentService(data.service ?? "");
+    setParentPrenom(data.prenom ?? "");
+    setParentNom(data.nom ?? "");
+    setParentUserId(String(data.id));
+  };
+
   if (!currentUser) return null;
 
-  const myInscriptions = getParentInscriptions(currentUser.id);
+  const myInscriptions = getParentInscriptions(parentUserId || currentUser.id);
 
   const resetChildForm = () => {
     setChildPrenom("");
@@ -45,6 +89,10 @@ const InscrireEnfant = () => {
   };
 
   const handleSubmit = () => {
+    if (!parentMatricule.trim() || !parentUserId) {
+      toast({ title: "Erreur", description: "Entrez votre matricule et laissez charger vos informations.", variant: "destructive" });
+      return;
+    }
     if (!childPrenom || !childNom || !childBirthDate || !childSex || !childRelation) {
       toast({ title: "Erreur", description: "Veuillez remplir tous les champs.", variant: "destructive" });
       return;
@@ -57,11 +105,11 @@ const InscrireEnfant = () => {
     setIsLoading(true);
     try {
       const result = await createInscription({
-        parentUserId: currentUser.id,
-        parentMatricule: currentUser.matricule,
-        parentPrenom: currentUser.prenom,
-        parentNom: currentUser.nom,
-        parentService: currentUser.service,
+        parentUserId: parentUserId || currentUser.id,
+        parentMatricule: parentMatricule.trim(),
+        parentPrenom: parentPrenom,
+        parentNom: parentNom,
+        parentService: parentService,
         childPrenom,
         childNom,
         childBirthDate,
@@ -118,7 +166,7 @@ const InscrireEnfant = () => {
         </motion.div>
       ) : (
         <>
-          {/* Parent Info (read-only) */}
+          {/* Parent Info : Matricule saisissable, Service/Prénom/Nom chargés depuis la base */}
           <Card className="glass-card">
             <CardHeader>
               <CardTitle className="font-display text-lg flex items-center gap-2">
@@ -127,21 +175,28 @@ const InscrireEnfant = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 gap-4 text-sm">
-                <div className="bg-muted/50 rounded-lg p-3">
-                  <p className="text-xs text-muted-foreground">Matricule</p>
-                  <p className="font-medium">{currentUser.matricule}</p>
+                <div className="space-y-1.5">
+                  <Label htmlFor="parent-matricule">Matricule</Label>
+                  <Input
+                    id="parent-matricule"
+                    value={parentMatricule}
+                    onChange={(e) => setParentMatricule(e.target.value)}
+                    onBlur={() => loadParentByMatricule(parentMatricule)}
+                    placeholder="Entrez votre matricule"
+                    className="h-11 bg-background"
+                  />
                 </div>
                 <div className="bg-muted/50 rounded-lg p-3">
                   <p className="text-xs text-muted-foreground">Service</p>
-                  <p className="font-medium">{currentUser.service}</p>
+                  <p className="font-medium">{parentService || "—"}</p>
                 </div>
                 <div className="bg-muted/50 rounded-lg p-3">
                   <p className="text-xs text-muted-foreground">Prénom</p>
-                  <p className="font-medium">{currentUser.prenom}</p>
+                  <p className="font-medium">{parentPrenom || "—"}</p>
                 </div>
                 <div className="bg-muted/50 rounded-lg p-3">
                   <p className="text-xs text-muted-foreground">Nom</p>
-                  <p className="font-medium">{currentUser.nom}</p>
+                  <p className="font-medium">{parentNom || "—"}</p>
                 </div>
               </div>
             </CardContent>

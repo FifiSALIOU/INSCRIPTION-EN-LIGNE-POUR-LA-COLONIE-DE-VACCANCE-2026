@@ -3,6 +3,7 @@ from datetime import datetime
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from .database import get_db
@@ -65,6 +66,25 @@ def count_users(db: Session = Depends(get_db)):
 def me(current_user: User = Depends(get_current_user)):
     """Retourne l'utilisateur connecté."""
     return current_user
+
+
+@app.get("/users/by-matricule/{matricule}", response_model=UserRead, tags=["users"])
+def get_user_by_matricule(
+    matricule: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Retourne un utilisateur par son matricule.
+    Un parent ne peut récupérer que son propre profil (matricule identique au sien).
+    """
+    matricule_norm = matricule.strip().upper()
+    if current_user.role == UserRole.PARENT and matricule_norm != current_user.matricule.strip().upper():
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Accès non autorisé à ce matricule.")
+    user = db.query(User).filter(func.upper(User.matricule) == matricule_norm).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Aucun utilisateur avec ce matricule.")
+    return user
 
 
 @app.post("/auth/login", response_model=Token, tags=["auth"])
