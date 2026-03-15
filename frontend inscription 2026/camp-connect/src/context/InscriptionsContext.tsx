@@ -50,10 +50,19 @@ const lienToFrontend = (s: string): ParentRelation => {
   return "autre";
 };
 
+type DemandeReadUser = {
+  id: number;
+  matricule: string;
+  prenom?: string | null;
+  nom?: string | null;
+  service?: string | null;
+};
+
 type DemandeRead = {
   id: number;
   statut?: string;
   created_at?: string;
+  user?: DemandeReadUser;
   enfants: Array<{
     id: number;
     prenom: string;
@@ -81,16 +90,17 @@ export const InscriptionsProvider = ({ children }: { children: React.ReactNode }
     }
     const list: Inscription[] = [];
     for (const d of data) {
-      const parentUserId = String(currentUser.id);
+      const parent = d.user ?? currentUser;
+      const parentUserId = String(parent.id);
       const statut = d.statut ? statusFromBackend(d.statut) : "en_attente";
       for (const e of d.enfants || []) {
         list.push({
           id: `${d.id}-${e.id}`,
           parentUserId,
-          parentMatricule: currentUser.matricule,
-          parentPrenom: currentUser.prenom,
-          parentNom: currentUser.nom,
-          parentService: currentUser.service,
+          parentMatricule: parent.matricule,
+          parentPrenom: parent.prenom ?? "",
+          parentNom: parent.nom ?? "",
+          parentService: parent.service ?? "",
           childPrenom: e.prenom,
           childNom: e.nom,
           childBirthDate: e.date_naissance,

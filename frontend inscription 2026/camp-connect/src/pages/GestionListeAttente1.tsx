@@ -23,9 +23,11 @@ const GestionListeAttente1 = () => {
 
   const exportData = items.map((item) => ({
     Matricule: item.parentMatricule,
-    Parent: `${item.parentNom} ${item.parentPrenom}`,
+    "Nom du parent": item.parentNom,
+    "Prénom du parent": item.parentPrenom,
     Service: item.parentService,
-    Enfant: `${item.childNom} ${item.childPrenom}`,
+    "Nom de l'enfant": item.childNom,
+    "Prénom de l'enfant": item.childPrenom,
     Âge: `${calculateAge(item.childBirthDate)} ans`,
     Sexe: item.childSex === "masculin" ? "M" : "F",
     Statut: STATUS_LABELS[item.status],
@@ -50,7 +52,7 @@ const GestionListeAttente1 = () => {
               <Badge variant="outline" className="ml-2">{items.length}</Badge>
             </CardTitle>
             <div className="flex gap-2">
-              <Button size="sm" variant="outline" onClick={() => exportToPDF(exportData, "Liste d'attente N°1", ["Matricule", "Parent", "Service", "Enfant", "Âge", "Sexe", "Statut"])}>
+              <Button size="sm" variant="outline" onClick={() => exportToPDF(exportData, "Liste d'attente N°1", ["Matricule", "Nom du parent", "Prénom du parent", "Service", "Nom de l'enfant", "Prénom de l'enfant", "Âge", "Sexe", "Statut"])}>
                 <Download className="w-3.5 h-3.5 mr-1.5" /> PDF
               </Button>
               <Button size="sm" variant="outline" onClick={() => exportToExcel(exportData, "Liste_attente_N1")}>
@@ -67,9 +69,11 @@ const GestionListeAttente1 = () => {
                   <TableHeader>
                     <TableRow className="bg-primary text-primary-foreground hover:bg-primary">
                       <TableHead className="text-primary-foreground font-bold text-xs uppercase tracking-wider">Matricule</TableHead>
-                      <TableHead className="text-primary-foreground font-bold text-xs uppercase tracking-wider">Parent</TableHead>
+                      <TableHead className="text-primary-foreground font-bold text-xs uppercase tracking-wider">Nom du parent</TableHead>
+                      <TableHead className="text-primary-foreground font-bold text-xs uppercase tracking-wider">Prénom du parent</TableHead>
                       <TableHead className="text-primary-foreground font-bold text-xs uppercase tracking-wider">Service</TableHead>
-                      <TableHead className="text-primary-foreground font-bold text-xs uppercase tracking-wider">Enfant</TableHead>
+                      <TableHead className="text-primary-foreground font-bold text-xs uppercase tracking-wider">Nom de l'enfant</TableHead>
+                      <TableHead className="text-primary-foreground font-bold text-xs uppercase tracking-wider">Prénom de l'enfant</TableHead>
                       <TableHead className="text-primary-foreground font-bold text-xs uppercase tracking-wider">Âge</TableHead>
                       <TableHead className="text-primary-foreground font-bold text-xs uppercase tracking-wider">Sexe</TableHead>
                       <TableHead className="text-primary-foreground font-bold text-xs uppercase tracking-wider">Statut</TableHead>
@@ -79,9 +83,11 @@ const GestionListeAttente1 = () => {
                     {items.map((item) => (
                       <TableRow key={item.id} className="hover:bg-muted/50">
                         <TableCell className="font-mono text-xs">{item.parentMatricule}</TableCell>
-                        <TableCell className="text-sm">{item.parentNom} {item.parentPrenom}</TableCell>
+                        <TableCell className="text-sm">{item.parentNom}</TableCell>
+                        <TableCell className="text-sm">{item.parentPrenom}</TableCell>
                         <TableCell className="text-sm">{item.parentService}</TableCell>
-                        <TableCell className="text-sm font-medium">{item.childNom} {item.childPrenom}</TableCell>
+                        <TableCell className="text-sm font-medium">{item.childNom}</TableCell>
+                        <TableCell className="text-sm font-medium">{item.childPrenom}</TableCell>
                         <TableCell className="text-sm">{calculateAge(item.childBirthDate)} ans</TableCell>
                         <TableCell className="text-sm">{item.childSex === "masculin" ? "M" : "F"}</TableCell>
                         <TableCell>

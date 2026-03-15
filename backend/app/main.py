@@ -4,7 +4,7 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import func
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from .database import get_db
 from .models import User, DemandeInscription, Enfant, DemandeStatut, UserRole, LienParenteEnum
@@ -16,6 +16,7 @@ from .schemas import (
     Token,
     DemandeCreate,
     DemandeRead,
+    DemandeReadWithUser,
     EnfantCreate,
     EnfantRead,
 )
@@ -253,18 +254,22 @@ def create_demande(
     return demande
 
 
-@app.get("/demandes", response_model=list[DemandeRead], tags=["demandes"])
+@app.get("/demandes", response_model=list[DemandeReadWithUser], tags=["demandes"])
 def list_demandes(
     statut: DemandeStatut | None = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    q = db.query(DemandeInscription)
+    q = db.query(DemandeInscription).options(joinedload(DemandeInscription.user))
     if current_user.role == UserRole.PARENT:
         q = q.filter(DemandeInscription.user_id == current_user.id)
     elif statut:
         q = q.filter(DemandeInscription.statut == statut)
-    return q.all()
+    demandes = q.all()
+    return [
+        DemandeReadWithUser(**DemandeRead.model_validate(d).model_dump(), user=d.user)
+        for d in demandes
+    ]
 
 
 # ---------- Gestionnaire : vues spécialisées sur les demandes ----------

@@ -99,3 +99,8 @@ class DemandeRead(BaseModel):
     class Config:
         from_attributes = True
 
+
+class DemandeReadWithUser(DemandeRead):
+    """Demande avec les infos du parent (user) pour l'affichage liste principale."""
+    user: UserRead
+
