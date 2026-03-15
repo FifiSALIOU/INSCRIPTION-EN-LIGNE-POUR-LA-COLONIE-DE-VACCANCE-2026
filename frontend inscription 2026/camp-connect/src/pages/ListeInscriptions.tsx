@@ -86,7 +86,7 @@ const ListeInscriptions = () => {
                           size="sm"
                           variant="ghost"
                           onClick={() => setSelectedInscription(item)}
-                          className="text-secondary hover:text-secondary text-xs"
+                          className="text-muted-foreground hover:text-muted-foreground hover:bg-transparent text-xs"
                         >
                           <Eye className="w-3.5 h-3.5 mr-1" /> Voir détails
                         </Button>

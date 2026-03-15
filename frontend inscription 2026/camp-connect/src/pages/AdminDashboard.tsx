@@ -139,7 +139,7 @@ const AdminDashboard = () => {
                                 size="sm"
                                 variant="ghost"
                                 onClick={() => setSelectedInscription(item)}
-                                className="text-secondary hover:text-secondary h-8 px-3 text-xs"
+                                className="text-muted-foreground hover:text-muted-foreground hover:bg-transparent h-8 px-3 text-xs"
                               >
                                 <Eye className="w-3.5 h-3.5 mr-1" /> Voir détails
                               </Button>

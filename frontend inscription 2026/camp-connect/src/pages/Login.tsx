@@ -111,7 +111,7 @@ const Login = () => {
 
           <form onSubmit={handleLogin} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="matricule" className="text-sm font-medium">N° Matricule</Label>
+              <Label htmlFor="matricule" className="text-sm font-medium">N° Matricule ou E-mail</Label>
               <Input
                 id="matricule"
                 type="text"
