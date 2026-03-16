@@ -141,10 +141,14 @@ export const InscriptionsProvider = ({ children }: { children: React.ReactNode }
         };
       }
       const { data: demandes } = await apiRequest<DemandeRead[]>("/demandes", { method: "GET" });
-      let demandeId: number;
+      let demandeId: number | null = null;
       if (demandes && demandes.length > 0) {
-        demandeId = demandes[0].id;
-      } else {
+        const demandeEnAttente = demandes.find((d) => statusFromBackend(d.statut ?? "en_attente") === "en_attente");
+        if (demandeEnAttente) {
+          demandeId = demandeEnAttente.id;
+        }
+      }
+      if (demandeId === null) {
         const { data: newDemande, error: errCreate } = await apiRequest<DemandeRead>("/demandes", {
           method: "POST",
           body: JSON.stringify({}),
